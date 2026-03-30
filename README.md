@@ -23,6 +23,8 @@ cd backend
 Erstelle das venv (falls nicht vorhanden):
 ```bash
 python3 -m venv venv
+oder
+python -m venv venv
 ```
 
 Aktiviere das venv:
