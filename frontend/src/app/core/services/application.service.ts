@@ -614,7 +614,6 @@ export class ApplicationService {
         this.normalizeRecord(record);
         break;
       case 'generate_offer':
-        if (record.rateCalculationStatus !== 'Abgeschlossen') this.runRateCalculation(record);
         record.offerStatus = 'Angebot erstellt';
         record.documentStatus = 'Dokument erstellt';
         this.appendLog(record, 'Dokumentenservice', 'Angebotsdokument wurde erzeugt.');

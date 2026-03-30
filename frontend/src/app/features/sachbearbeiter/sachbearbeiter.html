@@ -163,9 +163,12 @@
             }
 
             <!-- Row 2 -->
-            <button class="btn-action" 
-                    (click)="runAction(record.id, 'generate_offer')" 
-                    [disabled]="record.offerStatus === 'Angebot erstellt' || (record.loanAmount >= 10000 && record.teamleadDecision !== 'Freigegeben')">
+            <button class="btn-action"
+                    (click)="runAction(record.id, 'generate_offer')"
+                    [disabled]="record.offerStatus === 'Angebot erstellt'
+                      || record.scoringStatus !== 'Abgeschlossen'
+                      || record.rateCalculationStatus !== 'Abgeschlossen'
+                      || (record.loanAmount >= 10000 && record.teamleadDecision !== 'Freigegeben')">
               Angebot erzeugen
             </button>
 

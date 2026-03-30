@@ -87,10 +87,12 @@ export class StateService {
   );
 
   readonly openWorklist = computed<ApplicationRecord[]>(() =>
-    this.applications().filter(
-      r => !['Abgeschlossen', 'Abgelehnt'].includes(r.overallStatus) &&
-           r.teamleadDecision !== 'Ausstehend'
-    )
+    this.applications()
+      .filter(
+        r => !['Abgeschlossen', 'Abgelehnt'].includes(r.overallStatus) &&
+             r.teamleadDecision !== 'Ausstehend'
+      )
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
   );
 
   readonly filteredApplications = computed<ApplicationRecord[]>(() => {
