@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { StateService } from '../../core/services/state.service';
 import { ApplicationService } from '../../core/services/application.service';
-import { NgClass, JsonPipe, DatePipe } from '@angular/common';
+import { NgClass, JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-it',
   standalone: true,
-  imports: [NgClass, JsonPipe, DatePipe],
+  imports: [NgClass, JsonPipe],
   templateUrl: './it.html',
   styleUrl: './it.css',
 })

@@ -132,7 +132,7 @@ export class StateService {
         return;
       }
 
-      this.applications.set(apps);
+      this.applications.set(apps.map(app => this.appService.normalizeRecord(app)));
     } catch (e) {
       console.error("Failed to load applications", e);
     }

@@ -297,6 +297,18 @@ export class ApplicationService {
   }
 
   normalizeRecord(record: ApplicationRecord): ApplicationRecord {
+    if (!record.integration) {
+      record.integration = {
+        technicalStatus: 'Bereit',
+        errorMessage: '',
+        websiteJson: null,
+        scoringRequestXml: '',
+        scoringResponseXml: '',
+        rateRequestJson: null,
+        rateResponseJson: null,
+      };
+    }
+
     const routing = this.determineDepartment(record);
     Object.assign(record, routing);
 

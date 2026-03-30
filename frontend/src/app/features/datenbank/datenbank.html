@@ -1,7 +1,7 @@
 <div class="page-container">
   <div class="page-header">
     <h1>Datenbank / Audit</h1>
-    <div class="case-count" style="background: #e2e8f0; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
+    <div class="case-count">
       {{ state.filteredApplications().length }} Treffer
     </div>
   </div>
@@ -100,70 +100,131 @@
               <div class="value">{{ record.inquiryId }}</div>
             </div>
             <div class="status-box">
-              <label>KUNDE</label>
-              <div class="value">{{ record.firstName }} {{ record.lastName }}</div>
-              <div class="sub-value">{{ record.email }}</div>
+              <label>VORNAME</label>
+              <div class="value">{{ record.firstName }}</div>
+            </div>
+            <div class="status-box">
+              <label>NACHNAME</label>
+              <div class="value">{{ record.lastName }}</div>
+            </div>
+            <div class="status-box">
+              <label>E-MAIL</label>
+              <div class="value">{{ record.email }}</div>
             </div>
             <div class="status-box">
               <label>ADRESSE</label>
               <div class="value">{{ record.street }} {{ record.houseNumber }}</div>
-              <div class="sub-value">{{ record.postalCode }} {{ record.city }}</div>
+            </div>
+            <div class="status-box">
+              <label>PLZ</label>
+              <div class="value">{{ record.postalCode }}</div>
+            </div>
+            <div class="status-box">
+              <label>ORT</label>
+              <div class="value">{{ record.city }}</div>
             </div>
             <div class="status-box">
               <label>ARBEITGEBER</label>
               <div class="value">{{ record.employer }}</div>
-              <div class="sub-value">Seit: {{ record.employedSince | date:'dd.MM.yyyy' }}</div>
+            </div>
+            <div class="status-box">
+              <label>ARBEITGEBER UST-ID</label>
+              <div class="value">{{ record.employerVatId }}</div>
+            </div>
+            <div class="status-box">
+              <label>BESCHÄFTIGT SEIT</label>
+              <div class="value">{{ record.employedSince | date:'dd.MM.yyyy' }}</div>
+            </div>
+            <div class="status-box">
+              <label>IBAN</label>
+              <div class="value">{{ appService.formatContractIban(record.iban) }}</div>
+            </div>
+            <div class="status-box">
+              <label>KREDITART</label>
+              <div class="value">{{ record.loanType }}</div>
             </div>
             <div class="status-box">
               <label>KREDITSUMME</label>
               <div class="value">{{ record.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</div>
-              <div class="sub-value">{{ record.loanType }} / {{ record.termMonths }} Monate</div>
             </div>
             <div class="status-box">
-              <label>SCORING</label>
+              <label>LAUFZEIT</label>
+              <div class="value">{{ record.termMonths }} Monate</div>
+            </div>
+            <div class="status-box">
+              <label>VERWENDUNGSZWECK</label>
+              <div class="value">{{ record.purpose }}</div>
+            </div>
+            <div class="status-box">
+              <label>ABTEILUNG</label>
+              <div class="value">{{ record.department }}</div>
+            </div>
+            <div class="status-box">
+              <label>VOLLSTÄNDIGKEIT</label>
+              <div class="value">{{ record.completenessStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>SCORING-STATUS</label>
               <div class="value">{{ record.scoringStatus }}</div>
-              <div class="sub-value">Score: {{ record.score || '–' }} ({{ record.riskClass }})</div>
             </div>
             <div class="status-box">
-              <label>TEAMLEITER</label>
+              <label>SCORE</label>
+              <div class="value">{{ record.score || '–' }}</div>
+            </div>
+            <div class="status-box">
+              <label>RISIKOKLASSE</label>
+              <div class="value">{{ record.riskClass }}</div>
+            </div>
+            <div class="status-box">
+              <label>TEAMLEITERPFLICHT</label>
+              <div class="value">{{ record.teamleadRequired ? 'Ja' : 'Nein' }}</div>
+            </div>
+            <div class="status-box">
+              <label>TEAMLEITERENTSCHEIDUNG</label>
               <div class="value">{{ record.teamleadDecision }}</div>
-              <div class="sub-value">Pflicht: {{ record.teamleadRequired ? 'Ja' : 'Nein' }}</div>
             </div>
             <div class="status-box">
-              <label>ZINS / RATE</label>
-              <div class="value">{{ record.interestRate ? record.interestRate + ' %' : '–' }}</div>
-              <div class="sub-value">Rate: {{ record.monthlyRate | currency:'EUR':'symbol':'1.2-2':'de-DE' }}</div>
+              <label>ZINSBERECHNUNG</label>
+              <div class="value">{{ record.rateCalculationStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>MONATSRATE</label>
+              <div class="value">{{ record.monthlyRate | currency:'EUR':'symbol':'1.2-2':'de-DE' }}</div>
+            </div>
+            <div class="status-box">
+              <label>ANGEBOTSSTATUS</label>
+              <div class="value">{{ record.offerStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>SIGNATURSTATUS</label>
+              <div class="value">{{ record.signatureStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>MAILSTATUS</label>
+              <div class="value">{{ record.mailStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>GESAMTSTATUS</label>
+              <div class="value">{{ record.overallStatus }}</div>
             </div>
           </div>
 
-          <h2 class="section-title">Integrations-Logs</h2>
-          <div class="table-wrapper" style="height: 300px;">
-            <div class="table-container">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="width: 25%">ZEIT</th>
-                    <th style="width: 30%">SCHNITTSTELLE</th>
-                    <th style="width: 45%">MELDUNG</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (log of record.logs; track log.id) {
-                    <tr>
-                      <td><small>{{ log.timestamp | date:'dd.MM.yyyy, HH:mm' }}</small></td>
-                      <td><strong>{{ log.interfaceName }}</strong></td>
-                      <td>{{ log.message }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
+          <div class="section-title">Dokumente und Artefakte</div>
+          <div class="artifact-list">
+            @for (doc of record.documents; track doc.name) {
+              <div class="status-box">
+                <label>{{ doc.name }}</label>
+                <div class="value">{{ doc.status }}</div>
+                <div class="sub-value">{{ doc.detail }}</div>
+              </div>
+            }
           </div>
+
         </div>
       } @else {
         <div class="card">
           <div class="placeholder-content">
-            Wählen Sie einen Vorgang aus, um die Details anzuzeigen.
+            Wählen Sie einen Vorgang aus der Liste aus, um die Details anzuzeigen.
           </div>
         </div>
       }
