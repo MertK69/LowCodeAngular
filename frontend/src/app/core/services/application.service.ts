@@ -95,7 +95,7 @@ export class ApplicationService {
     const tones: Record<string, string> = {
       'Eingang': 'neutral', 'Routing': 'info', 'In Prüfung': 'warning',
       'Teamleitung': 'warning', 'Angebot': 'info', 'Signatur': 'info',
-      'Abgeschlossen': 'success', 'Rückfrage': 'warning', 'Fehler': 'danger',
+      'Abgeschlossen': 'success', 'Fehler': 'danger',
       'Abgelehnt': 'danger', 'Bereit': 'neutral', 'Aktiv': 'success',
       'Empfangen': 'info', 'Vollständig': 'success', 'Nicht erforderlich': 'neutral',
       'Nicht gestartet': 'neutral', 'Ausstehend': 'warning', 'Freigegeben': 'success',
@@ -119,6 +119,16 @@ export class ApplicationService {
         tone: 'danger',
         hardBlock: true,
         message: 'Für den JSON-Eingang müssen alle Pflichtfelder vollständig vorliegen.',
+      };
+    }
+
+    const loanAmount = this.toNumber(draft.loanAmount);
+    if (loanAmount < 5000 || loanAmount > 15000) {
+      return {
+        valid: false,
+        tone: 'danger',
+        hardBlock: true,
+        message: 'Die Kreditsumme muss zwischen 5.000 € und 15.000 € liegen.',
       };
     }
 
@@ -148,20 +158,11 @@ export class ApplicationService {
     const loanAmount = this.toNumber(draft.loanAmount);
     if (!loanAmount) return null;
 
-    if (draft.loanType === 'Konsumentenkredit' && loanAmount < 5000) {
-      return 'Der Antrag wird angenommen, liegt mit Konsumentenkredit unter 5.000 € aber außerhalb des aktuellen Produktkorridors.';
-    }
-    if (draft.loanType === 'Konsumentenkredit' && loanAmount > 20000 && loanAmount < 100000) {
-      return 'Der Antrag wird angenommen, aber Konsumentenkredite über 20.000 € und unter 100.000 € gibt es fachlich nicht.';
-    }
-    if (draft.loanType === 'Baufinanzierung' && loanAmount > 20000) {
+    if (draft.loanType === 'Baufinanzierung') {
       return 'Baufinanzierungen werden angenommen, in eine Spezialabteilung geroutet und als spätere Projektphase markiert.';
     }
-    if (draft.loanType === 'Großkredit' || loanAmount >= 100000) {
+    if (draft.loanType === 'Großkredit') {
       return 'Großkredite werden angenommen, in eine Spezialabteilung geroutet und als spätere Projektphase markiert.';
-    }
-    if (draft.loanType === 'Baufinanzierung') {
-      return 'Baufinanzierungen beginnen fachlich erst oberhalb von 20.000 € und werden entsprechend markiert.';
     }
     if (draft.loanType === 'Konsumentenkredit' && loanAmount >= 10000) {
       return 'Der Antrag kann verarbeitet werden. Ab 10.000 € ist zusätzlich eine Teamleiterfreigabe erforderlich.';
@@ -210,21 +211,21 @@ export class ApplicationService {
     }
     if (loanType === 'Konsumentenkredit' && loanAmount > 20000 && loanAmount < 100000) {
       return {
-        department: 'Produktgrenze / Rückfrage',
+        department: 'Produktgrenze',
         routeMessage: 'Konsumentenkredite über 20.000 € und unter 100.000 € gibt es fachlich nicht. Der Antrag wird angenommen, aber als Produktgrenze markiert.',
         supportedInPhaseOne: false, futurePhase: false, invalidProductRange: true,
       };
     }
     if (loanType === 'Konsumentenkredit' && loanAmount < 5000) {
       return {
-        department: 'Produktgrenze / Rückfrage',
+        department: 'Produktgrenze',
         routeMessage: 'Konsumentenkredite unter 5.000 € liegen außerhalb des definierten Produktkorridors. Der Antrag wird angenommen, aber fachlich markiert.',
         supportedInPhaseOne: false, futurePhase: false, invalidProductRange: true,
       };
     }
     if (loanType === 'Baufinanzierung') {
       return {
-        department: 'Baufinanzierung / Rückfrage',
+        department: 'Baufinanzierung',
         routeMessage: 'Baufinanzierungen beginnen fachlich erst oberhalb von 20.000 €. Der Antrag wird angenommen, aber als Produktgrenze markiert.',
         supportedInPhaseOne: false, futurePhase: false, invalidProductRange: true,
       };
@@ -286,7 +287,6 @@ export class ApplicationService {
   computeOverallStatus(record: ApplicationRecord): string {
     if (record.teamleadDecision === 'Abgelehnt') return 'Abgelehnt';
     if (record.integration.errorMessage) return 'Fehler';
-    if (record.invalidProductRange || record.teamleadDecision === 'Rückfrage') return 'Rückfrage';
     if (record.archiveStatus === 'Archiviert' || record.mailStatus === 'Versendet') return 'Abgeschlossen';
     if (['Zur Signatur gesendet', 'Signiert'].includes(record.signatureStatus)) return 'Signatur';
     if (record.offerStatus === 'Angebot erstellt' || record.documentStatus === 'Dokument erstellt' || record.rateCalculationStatus === 'Abgeschlossen') return 'Angebot';
@@ -639,11 +639,10 @@ export class ApplicationService {
     if (!record) return [];
 
     const teamStepState: TimelineStep['state'] = !record.teamleadRequired
-      ? 'skipped'
+      ? 'complete'
       : record.teamleadDecision === 'Freigegeben' ? 'complete'
         : record.teamleadDecision === 'Ausstehend' ? 'current'
           : record.teamleadDecision === 'Abgelehnt' ? 'danger'
-            : record.teamleadDecision === 'Rückfrage' ? 'current'
               : 'pending';
 
     return [

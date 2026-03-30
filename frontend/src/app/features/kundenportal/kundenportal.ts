@@ -96,6 +96,11 @@ export class Kundenportal {
   }
 
   async onSubmit() {
+    const validation = this.appService.validateDraft(this.state.customerDraft());
+    if (!validation.valid || validation.hardBlock) {
+      alert(validation.message);
+      return;
+    }
     try {
       await this.state.submitApplication(this.state.customerDraft());
     } catch (e) {
@@ -109,5 +114,11 @@ export class Kundenportal {
 
   updateDraft(key: string, value: any) {
     this.state.customerDraft.update(d => ({ ...d, [key]: value }));
+  }
+
+  protected hasActiveApplication(): boolean {
+    const record = this.state.customerRecord();
+    if (!record) return false;
+    return !['Abgeschlossen', 'Abgelehnt'].includes(record.overallStatus);
   }
 }

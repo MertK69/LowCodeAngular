@@ -19,68 +19,74 @@
         </div>
         
         <form class="antrag-form" (ngSubmit)="onSubmit()">
+          @if (hasActiveApplication()) {
+            <div class="info-box warning" style="margin-bottom: 1.5rem;">
+              <strong>Hinweis:</strong> Du hast bereits einen aktiven Antrag ({{ state.customerRecord()?.inquiryId }}).
+              Bevor du einen neuen Antrag stellen kannst, muss der aktuelle Vorgang abgeschlossen oder abgelehnt sein.
+            </div>
+          }
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>VORNAME</label>
-              <input type="text" [ngModel]="state.customerDraft().firstName" (ngModelChange)="updateDraft('firstName', $event)" name="firstName">
+              <input type="text" [ngModel]="state.customerDraft().firstName" (ngModelChange)="updateDraft('firstName', $event)" name="firstName" [disabled]="hasActiveApplication()">
             </div>
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>NACHNAME</label>
-              <input type="text" [ngModel]="state.customerDraft().lastName" (ngModelChange)="updateDraft('lastName', $event)" name="lastName">
+              <input type="text" [ngModel]="state.customerDraft().lastName" (ngModelChange)="updateDraft('lastName', $event)" name="lastName" [disabled]="hasActiveApplication()">
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
             <label>E-MAIL</label>
-            <input type="email" [ngModel]="state.customerDraft().email" (ngModelChange)="updateDraft('email', $event)" name="email">
+            <input type="email" [ngModel]="state.customerDraft().email" (ngModelChange)="updateDraft('email', $event)" name="email" [disabled]="hasActiveApplication()">
           </div>
 
-          <div class="form-group">
+          <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
             <label>STRASSE UND HAUSNUMMER</label>
-            <input type="text" [ngModel]="state.customerDraft().address" (ngModelChange)="updateDraft('address', $event)" name="address">
+            <input type="text" [ngModel]="state.customerDraft().address" (ngModelChange)="updateDraft('address', $event)" name="address" [disabled]="hasActiveApplication()">
           </div>
 
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>PLZ</label>
-              <input type="text" [ngModel]="state.customerDraft().postalCode" (ngModelChange)="updateDraft('postalCode', $event)" name="postalCode">
+              <input type="text" [ngModel]="state.customerDraft().postalCode" (ngModelChange)="updateDraft('postalCode', $event)" name="postalCode" [disabled]="hasActiveApplication()">
             </div>
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>ORT</label>
-              <input type="text" [ngModel]="state.customerDraft().city" (ngModelChange)="updateDraft('city', $event)" name="city">
+              <input type="text" [ngModel]="state.customerDraft().city" (ngModelChange)="updateDraft('city', $event)" name="city" [disabled]="hasActiveApplication()">
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>ARBEITGEBER</label>
-              <input type="text" [ngModel]="state.customerDraft().employer" (ngModelChange)="updateDraft('employer', $event)" name="employer">
+              <input type="text" [ngModel]="state.customerDraft().employer" (ngModelChange)="updateDraft('employer', $event)" name="employer" [disabled]="hasActiveApplication()">
             </div>
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>ARBEITGEBER-UST-ID</label>
-              <input type="text" [ngModel]="state.customerDraft().employerVatId" (ngModelChange)="updateDraft('employerVatId', $event)" name="employerVatId">
+              <input type="text" [ngModel]="state.customerDraft().employerVatId" (ngModelChange)="updateDraft('employerVatId', $event)" name="employerVatId" [disabled]="hasActiveApplication()">
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>NETTOEINKOMMEN PRO MONAT</label>
-              <input type="text" [ngModel]="state.customerDraft().monthlyNetIncome" (ngModelChange)="updateDraft('monthlyNetIncome', $event)" name="monthlyNetIncome">
+              <input type="text" [ngModel]="state.customerDraft().monthlyNetIncome" (ngModelChange)="updateDraft('monthlyNetIncome', $event)" name="monthlyNetIncome" [disabled]="hasActiveApplication()">
             </div>
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>BESCHÄFTIGT SEIT</label>
-              <input type="date" [ngModel]="state.customerDraft().employedSince" (ngModelChange)="updateDraft('employedSince', $event)" name="employedSince">
+              <input type="date" [ngModel]="state.customerDraft().employedSince" (ngModelChange)="updateDraft('employedSince', $event)" name="employedSince" [disabled]="hasActiveApplication()">
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>IBAN HAUSBANK</label>
-              <input type="text" [ngModel]="state.customerDraft().iban" (ngModelChange)="updateDraft('iban', $event)" name="iban">
+              <input type="text" [ngModel]="state.customerDraft().iban" (ngModelChange)="updateDraft('iban', $event)" name="iban" [disabled]="hasActiveApplication()">
             </div>
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>KREDITART</label>
-              <select [ngModel]="state.customerDraft().loanType" (ngModelChange)="updateDraft('loanType', $event)" name="loanType">
+              <select [ngModel]="state.customerDraft().loanType" (ngModelChange)="updateDraft('loanType', $event)" name="loanType" [disabled]="hasActiveApplication()">
                 <option value="Konsumentenkredit">Konsumentenkredit</option>
                 <option value="Baufinanzierung">Baufinanzierung</option>
                 <option value="Großkredit">Großkredit</option>
@@ -89,30 +95,36 @@
           </div>
 
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>KREDITSUMME</label>
-              <input type="text" [ngModel]="state.customerDraft().loanAmount" (ngModelChange)="updateDraft('loanAmount', $event)" name="loanAmount">
+              <input type="text" [ngModel]="state.customerDraft().loanAmount" (ngModelChange)="updateDraft('loanAmount', $event)" name="loanAmount" [disabled]="hasActiveApplication()">
             </div>
-            <div class="form-group">
+            <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
               <label>LAUFZEIT IN MONATEN</label>
-              <input type="text" [ngModel]="state.customerDraft().termMonths" (ngModelChange)="updateDraft('termMonths', $event)" name="termMonths">
+              <input type="text" [ngModel]="state.customerDraft().termMonths" (ngModelChange)="updateDraft('termMonths', $event)" name="termMonths" [disabled]="hasActiveApplication()">
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" [style.opacity]="hasActiveApplication() ? 0.5 : 1" [style.pointer-events]="hasActiveApplication() ? 'none' : 'auto'">
             <label>VERWENDUNGSZWECK</label>
-            <input type="text" [ngModel]="state.customerDraft().purpose" (ngModelChange)="updateDraft('purpose', $event)" name="purpose">
+            <input type="text" [ngModel]="state.customerDraft().purpose" (ngModelChange)="updateDraft('purpose', $event)" name="purpose" [disabled]="hasActiveApplication()">
           </div>
 
           @if (appService.validateDraft(state.customerDraft()); as validation) {
-            <div class="info-box" [ngClass]="validation.tone" style="margin-top: 1rem;">
-              {{ validation.message }}
-            </div>
+            @if (!hasActiveApplication()) {
+              <div class="info-box" [ngClass]="validation.tone" style="margin-top: 1rem;">
+                {{ validation.message }}
+              </div>
+            }
           }
 
           <div class="form-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <button type="submit" class="btn-action primary">Antrag absenden</button>
-            <button type="button" class="btn-action" (click)="onReset()">Zurücksetzen</button>
+            <button type="submit" 
+              class="btn-action primary" 
+              [disabled]="hasActiveApplication() || !appService.validateDraft(state.customerDraft()).valid || appService.validateDraft(state.customerDraft()).hardBlock">
+              Antrag absenden
+            </button>
+            <button type="button" class="btn-action" (click)="onReset()" [disabled]="hasActiveApplication()">Zurücksetzen</button>
           </div>
         </form>
       </div>
