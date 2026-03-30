@@ -1,0 +1,146 @@
+.case-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background-color: #f1f5f9;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.filter-card {
+  margin-bottom: 2rem;
+  padding: 1.25rem 2rem;
+}
+
+.filter-grid {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4rem;
+}
+
+.filter-grid .form-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filter-grid label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-main);
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.filter-grid input, 
+.filter-grid select {
+  border: 1px solid #94a3b8;
+  border-radius: 2px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+.filter-grid input::placeholder {
+  color: var(--text-muted);
+}
+
+.page-grid.wide {
+  grid-template-columns: 3fr 2fr;
+}
+
+/* Status Grid for Falldetails */
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.status-box {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.status-box label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.status-box .value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+/* Artifact List for Dokumente und Artefakte */
+.section-divider {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.section-divider.no-top-margin {
+  margin-top: 0;
+}
+
+.artifact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.artifact-list .status-box {
+  padding: 1rem;
+  min-height: 80px;
+}
+
+.artifact-list .status-box .value {
+  font-size: 0.9375rem;
+  margin-bottom: 0.25rem;
+}
+
+.artifact-list .status-box .sub-value {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.card-header h2 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1400px) {
+  .page-grid.wide {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-grid {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+}

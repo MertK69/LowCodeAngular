@@ -1,0 +1,172 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Datenbank / Audit</h1>
+    <div class="case-count" style="background: #e2e8f0; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
+      {{ state.filteredApplications().length }} Treffer
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+    <div style="display: flex; gap: 2rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">NAME</label>
+        <input type="text" placeholder="Nach Name filtern" 
+               style="border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.75rem; font-size: 0.8125rem;"
+               [value]="state.auditFilters().name"
+               (input)="updateFilter('name', $event)">
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">ANFRAGE-ID</label>
+        <input type="text" placeholder="ID filtern" 
+               style="border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.75rem; font-size: 0.8125rem;"
+               [value]="state.auditFilters().inquiryId"
+               (input)="updateFilter('inquiryId', $event)">
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">STATUS</label>
+        <select style="border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.75rem; font-size: 0.8125rem;"
+                [value]="state.auditFilters().status" (change)="updateFilter('status', $event)">
+          <option value="alle">Alle</option>
+          <option value="Eingang">Eingang</option>
+          <option value="Routing">Routing</option>
+          <option value="In Prüfung">In Prüfung</option>
+          <option value="Teamleitung">Teamleitung</option>
+          <option value="Angebot">Angebot</option>
+          <option value="Signatur">Signatur</option>
+          <option value="Abgeschlossen">Abgeschlossen</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-grid wide">
+    <div class="left-column">
+      <div class="card">
+        <div class="card-header">
+          <h2>Alle Vorgänge</h2>
+        </div>
+        <div class="table-wrapper">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%">ANFRAGE-ID</th>
+                  <th style="width: 30%">KUNDE</th>
+                  <th style="width: 25%">PRODUKT</th>
+                  <th style="width: 20%">STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of state.filteredApplications(); track app.id) {
+                  <tr [class.selected]="state.selectedId() === app.id" (click)="select(app.id)">
+                    <td>
+                      <strong>{{ app.inquiryId }}</strong>
+                      <small>{{ app.createdAt | date:'dd.MM.yyyy, HH:mm' }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.firstName }} {{ app.lastName }}</strong>
+                      <small>{{ app.city }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.loanType }}</strong>
+                      <small>{{ app.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</small>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="'badge-' + appService.getStatusTone(app.overallStatus).toLowerCase()">
+                        {{ app.overallStatus }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      @if (state.selectedRecord(); as record) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Falldetails</h2>
+            <span class="badge" [ngClass]="'badge-' + appService.getStatusTone(record.overallStatus).toLowerCase()">
+              {{ record.overallStatus }}
+            </span>
+          </div>
+          <div class="status-grid">
+            <div class="status-box">
+              <label>ANFRAGE-ID</label>
+              <div class="value">{{ record.inquiryId }}</div>
+            </div>
+            <div class="status-box">
+              <label>KUNDE</label>
+              <div class="value">{{ record.firstName }} {{ record.lastName }}</div>
+              <div class="sub-value">{{ record.email }}</div>
+            </div>
+            <div class="status-box">
+              <label>ADRESSE</label>
+              <div class="value">{{ record.street }} {{ record.houseNumber }}</div>
+              <div class="sub-value">{{ record.postalCode }} {{ record.city }}</div>
+            </div>
+            <div class="status-box">
+              <label>ARBEITGEBER</label>
+              <div class="value">{{ record.employer }}</div>
+              <div class="sub-value">Seit: {{ record.employedSince | date:'dd.MM.yyyy' }}</div>
+            </div>
+            <div class="status-box">
+              <label>KREDITSUMME</label>
+              <div class="value">{{ record.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</div>
+              <div class="sub-value">{{ record.loanType }} / {{ record.termMonths }} Monate</div>
+            </div>
+            <div class="status-box">
+              <label>SCORING</label>
+              <div class="value">{{ record.scoringStatus }}</div>
+              <div class="sub-value">Score: {{ record.score || '–' }} ({{ record.riskClass }})</div>
+            </div>
+            <div class="status-box">
+              <label>TEAMLEITER</label>
+              <div class="value">{{ record.teamleadDecision }}</div>
+              <div class="sub-value">Pflicht: {{ record.teamleadRequired ? 'Ja' : 'Nein' }}</div>
+            </div>
+            <div class="status-box">
+              <label>ZINS / RATE</label>
+              <div class="value">{{ record.interestRate ? record.interestRate + ' %' : '–' }}</div>
+              <div class="sub-value">Rate: {{ record.monthlyRate | currency:'EUR':'symbol':'1.2-2':'de-DE' }}</div>
+            </div>
+          </div>
+
+          <h2 class="section-title">Integrations-Logs</h2>
+          <div class="table-wrapper" style="height: 300px;">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 25%">ZEIT</th>
+                    <th style="width: 30%">SCHNITTSTELLE</th>
+                    <th style="width: 45%">MELDUNG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (log of record.logs; track log.id) {
+                    <tr>
+                      <td><small>{{ log.timestamp | date:'dd.MM.yyyy, HH:mm' }}</small></td>
+                      <td><strong>{{ log.interfaceName }}</strong></td>
+                      <td>{{ log.message }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="card">
+          <div class="placeholder-content">
+            Wählen Sie einen Vorgang aus, um die Details anzuzeigen.
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

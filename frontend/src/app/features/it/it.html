@@ -1,0 +1,205 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Integration / IT</h1>
+  </div>
+
+  <div class="page-grid wide">
+    <div class="left-column">
+      <div class="card">
+        <div class="card-header">
+          <h2>Alle Vorgänge (Technisch)</h2>
+        </div>
+        <div class="table-wrapper" style="height: 350px;">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 40%">ANFRAGE-ID</th>
+                  <th style="width: 35%">KUNDE</th>
+                  <th style="width: 25%">TECH-STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of state.applications(); track app.id) {
+                  <tr [class.selected]="state.selectedId() === app.id" (click)="select(app.id)">
+                    <td>
+                      <strong>{{ app.inquiryId }}</strong>
+                      <small>{{ app.createdAt | date:'dd.MM.yyyy, HH:mm' }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.firstName }} {{ app.lastName }}</strong>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="'badge-' + app.integration.technicalStatus.toLowerCase()">
+                        {{ app.integration.technicalStatus }}
+                      </span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="3" class="empty-state">Keine Daten vorhanden.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Globales System-Monitoring</h2>
+          <span class="badge badge-success">System Online</span>
+        </div>
+        <div class="table-wrapper" style="height: 300px;">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%">ZEIT</th>
+                  <th style="width: 25%">KOMPONENTE</th>
+                  <th style="width: 50%">EREIGNIS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><small>Gerade eben</small></td>
+                  <td><span class="badge badge-info">Auth-Service</span></td>
+                  <td>Health Check OK - Latenz 12ms</td>
+                </tr>
+                <tr>
+                  <td><small>Vor 2 Min.</small></td>
+                  <td><span class="badge badge-success">Database</span></td>
+                  <td>Backup-Routine erfolgreich abgeschlossen</td>
+                </tr>
+                <tr>
+                  <td><small>Vor 5 Min.</small></td>
+                  <td><span class="badge badge-info">REST-API</span></td>
+                  <td>Endpoint /applications/bulk aufgerufen (250 OK)</td>
+                </tr>
+                <tr>
+                  <td><small>Vor 12 Min.</small></td>
+                  <td><span class="badge badge-warning">Scoring</span></td>
+                  <td>Warnung: Schnittstelle 'ExternalCredit' antwortet langsam</td>
+                </tr>
+                <tr>
+                  <td><small>Vor 15 Min.</small></td>
+                  <td><span class="badge badge-info">Mail-Service</span></td>
+                  <td>SMTP-Queue abgearbeitet (0 verbleibend)</td>
+                </tr>
+                <tr>
+                  <td><small>Vor 20 Min.</small></td>
+                  <td><span class="badge badge-info">System</span></td>
+                  <td>Cache-Invalidierung durchgeführt</td>
+                </tr>
+                @for (log of state.logs(); track log.id) {
+                  <tr>
+                    <td><small>{{ log.timestamp | date:'HH:mm' }}</small></td>
+                    <td><span class="badge badge-neutral">{{ log.interfaceName }}</span></td>
+                    <td>{{ log.inquiryId }}: {{ log.message }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      @if (state.selectedRecord(); as record) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Technische Analyse</h2>
+            <span class="badge" [ngClass]="'badge-' + record.integration.technicalStatus.toLowerCase()">
+              {{ record.integration.technicalStatus }}
+            </span>
+          </div>
+          <div class="status-grid">
+            <div class="status-box">
+              <label>TECHNISCHER FALL (ID)</label>
+              <div class="value">{{ record.inquiryId }}</div>
+              <div class="sub-value">Internal ID: {{ record.id }}</div>
+            </div>
+            <div class="status-box">
+              <label>API-VERSION</label>
+              <div class="value">v1.2.5-stable</div>
+              <div class="sub-value">MFLB-Internal-Gateway</div>
+            </div>
+            <div class="status-box">
+              <label>ORIGIN / KANAL</label>
+              <div class="value">Website-JSON</div>
+              <div class="sub-value">MFLB-Frontend-Cluster</div>
+            </div>
+            <div class="status-box">
+              <label>SCHNITTSTELLEN-STATUS</label>
+              <div class="value">{{ record.integration.technicalStatus }}</div>
+              <div class="sub-value">Keine kritischen Fehler</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Transformationen (Payloads)</h2>
+          </div>
+          <div class="tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <button class="btn-action" [class.primary]="state.integrationTab() === 'website'" (click)="setTab('website')">JSON</button>
+            <button class="btn-action" [class.primary]="state.integrationTab() === 'scoring_req'" (click)="setTab('scoring_req')">Req XML</button>
+            <button class="btn-action" [class.primary]="state.integrationTab() === 'scoring_res'" (click)="setTab('scoring_res')">Res XML</button>
+            <button class="btn-action" [class.primary]="state.integrationTab() === 'rate_req'" (click)="setTab('rate_req')">Rate Req</button>
+            <button class="btn-action" [class.primary]="state.integrationTab() === 'rate_res'" (click)="setTab('rate_res')">Rate Res</button>
+          </div>
+          
+          <div style="background: #1e293b; color: #f8fafc; padding: 1.25rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; overflow-x: auto; max-height: 400px;">
+            @if (state.integrationTab() === 'website') {
+              <pre>{{ record.integration.websiteJson | json }}</pre>
+            } @else if (state.integrationTab() === 'scoring_req') {
+              <pre>{{ record.integration.scoringRequestXml || 'Noch nicht erzeugt.' }}</pre>
+            } @else if (state.integrationTab() === 'scoring_res') {
+              <pre>{{ record.integration.scoringResponseXml || 'Noch nicht empfangen.' }}</pre>
+            } @else if (state.integrationTab() === 'rate_req') {
+              <pre>{{ record.integration.rateRequestJson | json }}</pre>
+            } @else if (state.integrationTab() === 'rate_res') {
+              <pre>{{ record.integration.rateResponseJson | json }}</pre>
+            }
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Vorgangs-Historie</h2>
+          </div>
+          <div class="table-wrapper" style="height: 250px;">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%">ZEIT</th>
+                    <th style="width: 30%">SCHNITTSTELLE</th>
+                    <th style="width: 50%">MELDUNG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (log of record.logs; track log.id) {
+                    <tr>
+                      <td><small>{{ log.timestamp | date:'HH:mm' }}</small></td>
+                      <td><strong>{{ log.interfaceName }}</strong></td>
+                      <td>{{ log.message }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="card">
+          <div class="placeholder-content">
+            Wähle einen Vorgang aus, um die technische Analyse zu starten.
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

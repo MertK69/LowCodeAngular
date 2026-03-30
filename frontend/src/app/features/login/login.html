@@ -1,0 +1,33 @@
+<div class="login-container">
+  <div class="login-box">
+    <h2>Anmeldung</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Benutzername</label>
+        <input 
+          type="text" 
+          id="username" 
+          [ngModel]="username()" 
+          (ngModelChange)="username.set($event)"
+          name="username"
+          placeholder="Z.B. Kunde1 oder Mitarbeiter1"
+        >
+      </div>
+      <div class="form-group">
+        <label for="password">Passwort</label>
+        <input 
+          type="password" 
+          id="password" 
+          [ngModel]="password()" 
+          (ngModelChange)="password.set($event)"
+          name="password"
+          placeholder="Passwort"
+        >
+      </div>
+      @if (errorMessage()) {
+        <div class="error-msg">{{ errorMessage() }}</div>
+      }
+      <button type="submit" class="login-btn">Anmelden</button>
+    </form>
+  </div>
+</div>

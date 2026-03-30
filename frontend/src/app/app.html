@@ -1,0 +1,85 @@
+<div class="layout" [class.collapsed]="sidebarCollapsed()">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-icon icon-k header-logo">M</div>
+      <span class="logo-text">MFLB Kredit</span>
+    </div>
+    
+    <div class="sidebar-section">Navigation</div>
+    
+    <nav class="sidebar-nav">
+      @if (!state.authState().isLoggedIn) {
+        <a routerLink="/landingpage" routerLinkActive="active" class="nav-item">
+          <div class="nav-icon icon-l">L</div>
+          <span>Landing Page</span>
+        </a>
+      }
+
+      @if (state.authState().isLoggedIn) {
+        @if (state.authState().role === 'customer') {
+          <a routerLink="/kundenportal" routerLinkActive="active" class="nav-item">
+            <div class="nav-icon icon-k">K</div>
+            <span>Kundenportal</span>
+          </a>
+        } @else if (state.authState().role === 'employee') {
+          <a routerLink="/sachbearbeiter" routerLinkActive="active" class="nav-item">
+            <div class="nav-icon icon-s">S</div>
+            <span>Sachbearbeitung</span>
+          </a>
+          
+          <a routerLink="/teamleitung" routerLinkActive="active" class="nav-item">
+            <div class="nav-icon icon-t">T</div>
+            <span>Teamleitung</span>
+          </a>
+          
+          <a routerLink="/it" routerLinkActive="active" class="nav-item">
+            <div class="nav-icon icon-i">I</div>
+            <span>Integration / IT</span>
+          </a>
+          
+          <a routerLink="/datenbank" routerLinkActive="active" class="nav-item">
+            <div class="nav-icon icon-d">D</div>
+            <span>Datenbank / Audit</span>
+          </a>
+        }
+      }
+
+      <div class="spacer"></div>
+
+      @if (!state.authState().isLoggedIn) {
+        <a routerLink="/login" routerLinkActive="active" class="nav-item login-item">
+          <div class="nav-icon icon-a">A</div>
+          <span>Anmeldung</span>
+        </a>
+      } @else {
+        <button (click)="logout()" class="nav-item logout-sidebar-item login-item">
+          <div class="nav-icon icon-a">X</div>
+          <span>Abmelden</span>
+        </button>
+      }
+    </nav>
+  </aside>
+
+  <main class="main-container">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-btn" (click)="toggleSidebar()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        @if (state.authState().isLoggedIn) {
+          <div class="user-info">
+            Angemeldet als: {{ state.authState().username }} ({{ state.authState().role === 'customer' ? 'Kunde' : 'Mitarbeiter' }})
+          </div>
+        }
+      </div>
+      <div class="header-right">
+        <div class="bank-badge">MFLB | Money for Less Bank</div>
+      </div>
+    </header>
+
+
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

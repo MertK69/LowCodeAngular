@@ -1,0 +1,137 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Teamleitung</h1>
+  </div>
+
+  <div class="page-grid">
+    <div class="left-column">
+      <div class="card">
+        <div class="card-header">
+          <h2>Team-Warteschlange</h2>
+        </div>
+        <div class="table-wrapper">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%">ANFRAGE-ID</th>
+                  <th style="width: 30%">KUNDE</th>
+                  <th style="width: 25%">PRODUKT</th>
+                  <th style="width: 20%">STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of state.teamQueue(); track app.id) {
+                  <tr [class.selected]="state.selectedId() === app.id" (click)="select(app.id)">
+                    <td>
+                      <strong>{{ app.inquiryId }}</strong>
+                      <small>{{ app.createdAt | date:'dd.MM.yyyy, HH:mm' }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.firstName }} {{ app.lastName }}</strong>
+                      <small>{{ app.department }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.loanType }}</strong>
+                      <small>{{ app.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</small>
+                    </td>
+                    <td>
+                      <span class="badge badge-warning">Ausstehend</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="empty-state">Keine Anträge zur Freigabe vorhanden.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      @if (state.selectedRecord(); as record) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Prüfung Teamleitung</h2>
+            <span class="badge" [ngClass]="'badge-' + appService.getStatusTone(record.overallStatus).toLowerCase()">
+              {{ record.overallStatus }}
+            </span>
+          </div>
+          <div class="status-grid">
+            <div class="status-box">
+              <label>KUNDE</label>
+              <div class="value">{{ record.firstName }} {{ record.lastName }}</div>
+              <div class="sub-value">{{ record.postalCode }} {{ record.city }}</div>
+            </div>
+            <div class="status-box">
+              <label>ANTRAG</label>
+              <div class="value">{{ record.loanType }}</div>
+              <div class="sub-value">{{ record.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }} · {{ record.termMonths }} Monate</div>
+            </div>
+            <div class="status-box">
+              <label>EINKOMMEN</label>
+              <div class="value">{{ record.monthlyNetIncome | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</div>
+              <div class="sub-value">Netto pro Monat</div>
+            </div>
+            <div class="status-box">
+              <label>ARBEITGEBER</label>
+              <div class="value">{{ record.employer }}</div>
+              <div class="sub-value">Ust-ID: {{ record.employerVatId }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Entscheidung</h2>
+          </div>
+          <div class="info-box info">
+            Dieser Antrag übersteigt 10.000 € und erfordert eine explizite Freigabe durch die Teamleitung.
+          </div>
+          
+          <div class="action-buttons">
+            <button class="btn-action primary" (click)="runAction(record.id, 'team_approve')">Freigeben</button>
+            <button class="btn-action secondary" (click)="runAction(record.id, 'team_reject')">Ablehnen</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Verlauf</h2>
+          </div>
+          <div class="table-wrapper" style="height: 250px;">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%">ZEIT</th>
+                    <th style="width: 30%">SCHNITTSTELLE</th>
+                    <th style="width: 50%">NACHRICHT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (log of record.logs; track log.id) {
+                    <tr>
+                      <td><small>{{ log.timestamp | date:'HH:mm' }}</small></td>
+                      <td><strong>{{ log.interfaceName }}</strong></td>
+                      <td>{{ log.message }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="card">
+          <div class="placeholder-content">
+            Wählen Sie einen Antrag aus der Warteschlange aus.
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

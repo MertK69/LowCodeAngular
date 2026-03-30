@@ -1,0 +1,212 @@
+<div class="kundenportal-container">
+  <div class="page-header">
+    <h1>Kundenportal</h1>
+    @if (state.customerRecord(); as record) {
+      <div class="active-case-info">
+        <div class="case-label">AKTIVER FALL</div>
+        <div class="case-value">{{ record.inquiryId }}</div>
+        <div class="case-status">{{ record.overallStatus }}</div>
+      </div>
+    }
+  </div>
+
+  <div class="page-grid">
+    <div class="left-column">
+      <div class="card">
+        <div class="card-header">
+          <h2>Antrag erfassen</h2>
+          <span class="json-link" style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">Website → JSON</span>
+        </div>
+        
+        <form class="antrag-form" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <div class="form-group">
+              <label>VORNAME</label>
+              <input type="text" [ngModel]="state.customerDraft().firstName" (ngModelChange)="updateDraft('firstName', $event)" name="firstName">
+            </div>
+            <div class="form-group">
+              <label>NACHNAME</label>
+              <input type="text" [ngModel]="state.customerDraft().lastName" (ngModelChange)="updateDraft('lastName', $event)" name="lastName">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>E-MAIL</label>
+            <input type="email" [ngModel]="state.customerDraft().email" (ngModelChange)="updateDraft('email', $event)" name="email">
+          </div>
+
+          <div class="form-group">
+            <label>STRASSE UND HAUSNUMMER</label>
+            <input type="text" [ngModel]="state.customerDraft().address" (ngModelChange)="updateDraft('address', $event)" name="address">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>PLZ</label>
+              <input type="text" [ngModel]="state.customerDraft().postalCode" (ngModelChange)="updateDraft('postalCode', $event)" name="postalCode">
+            </div>
+            <div class="form-group">
+              <label>ORT</label>
+              <input type="text" [ngModel]="state.customerDraft().city" (ngModelChange)="updateDraft('city', $event)" name="city">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>ARBEITGEBER</label>
+              <input type="text" [ngModel]="state.customerDraft().employer" (ngModelChange)="updateDraft('employer', $event)" name="employer">
+            </div>
+            <div class="form-group">
+              <label>ARBEITGEBER-UST-ID</label>
+              <input type="text" [ngModel]="state.customerDraft().employerVatId" (ngModelChange)="updateDraft('employerVatId', $event)" name="employerVatId">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>NETTOEINKOMMEN PRO MONAT</label>
+              <input type="text" [ngModel]="state.customerDraft().monthlyNetIncome" (ngModelChange)="updateDraft('monthlyNetIncome', $event)" name="monthlyNetIncome">
+            </div>
+            <div class="form-group">
+              <label>BESCHÄFTIGT SEIT</label>
+              <input type="date" [ngModel]="state.customerDraft().employedSince" (ngModelChange)="updateDraft('employedSince', $event)" name="employedSince">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>IBAN HAUSBANK</label>
+              <input type="text" [ngModel]="state.customerDraft().iban" (ngModelChange)="updateDraft('iban', $event)" name="iban">
+            </div>
+            <div class="form-group">
+              <label>KREDITART</label>
+              <select [ngModel]="state.customerDraft().loanType" (ngModelChange)="updateDraft('loanType', $event)" name="loanType">
+                <option value="Konsumentenkredit">Konsumentenkredit</option>
+                <option value="Baufinanzierung">Baufinanzierung</option>
+                <option value="Großkredit">Großkredit</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>KREDITSUMME</label>
+              <input type="text" [ngModel]="state.customerDraft().loanAmount" (ngModelChange)="updateDraft('loanAmount', $event)" name="loanAmount">
+            </div>
+            <div class="form-group">
+              <label>LAUFZEIT IN MONATEN</label>
+              <input type="text" [ngModel]="state.customerDraft().termMonths" (ngModelChange)="updateDraft('termMonths', $event)" name="termMonths">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>VERWENDUNGSZWECK</label>
+            <input type="text" [ngModel]="state.customerDraft().purpose" (ngModelChange)="updateDraft('purpose', $event)" name="purpose">
+          </div>
+
+          @if (appService.validateDraft(state.customerDraft()); as validation) {
+            <div class="info-box" [ngClass]="validation.tone" style="margin-top: 1rem;">
+              {{ validation.message }}
+            </div>
+          }
+
+          <div class="form-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn-action primary">Antrag absenden</button>
+            <button type="button" class="btn-action" (click)="onReset()">Zurücksetzen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="right-column">
+      @if (state.customerRecord(); as record) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Aktueller Fall</h2>
+            <span class="badge" [ngClass]="'badge-' + appService.getStatusTone(record.overallStatus).toLowerCase()">
+              {{ record.overallStatus }}
+            </span>
+          </div>
+          <div class="status-grid">
+            <div class="status-box">
+              <label>ANFRAGE-ID</label>
+              <div class="value">{{ record.inquiryId }}</div>
+              <div class="sub-value">{{ record.createdAt | date:'dd.MM.yyyy, HH:mm' }}</div>
+            </div>
+            <div class="status-box">
+              <label>KREDITSUMME</label>
+              <div class="value">{{ record.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</div>
+              <div class="sub-value">{{ record.loanType }}</div>
+            </div>
+            <div class="status-box" style="grid-column: span 2;">
+              <label>STATUS-MELDUNG</label>
+              <div class="value" style="font-size: 0.8125rem; font-weight: 500;">{{ record.routeMessage }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Prozessstatus</h2>
+          </div>
+          <div class="timeline-container" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            @for (step of appService.getTimelineSteps(record); track step.title) {
+              <div class="timeline-step" style="display: flex; gap: 1.25rem; position: relative;">
+                <div class="step-icon" [ngClass]="step.state" style="width: 12px; height: 12px; border-radius: 50%; border: 2px solid #cbd5e1; background: #fff; margin-top: 0.25rem; z-index: 2; flex-shrink: 0;">
+                  @if (step.state === 'complete') {
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: #22c55e;"></div>
+                  } @else if (step.state === 'current') {
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: #3b82f6;"></div>
+                  } @else if (step.state === 'danger') {
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: #ef4444;"></div>
+                  }
+                </div>
+                <div class="step-content">
+                  <div style="font-size: 0.8125rem; font-weight: 700; color: #1e293b;">{{ step.title }}</div>
+                  
+                  @if (step.title === 'Dokument & Signatur' && record.overallStatus === 'Signatur' && record.signatureStatus === 'Zur Signatur gesendet') {
+                    <div class="signature-section" style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                      <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem;">BITTE HIER SIGNIEREN</div>
+                      <canvas #sigCanvas width="300" height="120" 
+                        (mousedown)="startDrawing($event)" 
+                        (mousemove)="draw($event)" 
+                        (mouseup)="stopDrawing()"
+                        (mouseleave)="stopDrawing()"
+                        (touchstart)="startDrawing($event)"
+                        (touchmove)="draw($event)"
+                        (touchend)="stopDrawing()"
+                        style="background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; cursor: crosshair; display: block; width: 100%;">
+                      </canvas>
+                      <div class="sig-actions" style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
+                        <button type="button" class="btn-action primary small" [disabled]="!hasSignature" (click)="onSign()">Absenden</button>
+                        <button type="button" class="btn-action small" (click)="clearSignature()">Löschen</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="card">
+          <div class="card-header">
+            <h2>Aktueller Fall</h2>
+          </div>
+          <div style="text-align: center; padding: 2rem; border: 1px dashed var(--border-color); border-radius: 8px; color: var(--text-muted); font-size: 0.8125rem;">
+            Sobald du den Antrag absendest, erscheint hier der angelegte Fall mit seinen Fachinformationen.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Prozessstatus</h2>
+          </div>
+          <div style="text-align: center; padding: 2rem; border: 1px dashed var(--border-color); border-radius: 8px; color: var(--text-muted); font-size: 0.8125rem;">
+            Der Prozess startet erst nach dem Absenden des Online-Antrags.
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

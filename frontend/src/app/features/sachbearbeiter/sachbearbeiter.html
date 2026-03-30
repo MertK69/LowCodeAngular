@@ -1,0 +1,188 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Sachbearbeitung</h1>
+  </div>
+
+  <div class="page-grid">
+    <div class="left-column">
+      <div class="card">
+        <div class="card-header">
+          <h2>Offene Vorgänge</h2>
+        </div>
+        <div class="table-wrapper">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%">ANFRAGE-ID</th>
+                  <th style="width: 30%">KUNDE</th>
+                  <th style="width: 25%">PRODUKT</th>
+                  <th style="width: 20%">STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of state.openWorklist(); track app.id) {
+                  <tr [class.selected]="state.selectedId() === app.id" (click)="select(app.id)">
+                    <td>
+                      <strong>{{ app.inquiryId }}</strong>
+                      <small>{{ app.createdAt | date:'dd.MM.yyyy, HH:mm' }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.firstName }} {{ app.lastName }}</strong>
+                      <small>{{ app.department }}</small>
+                    </td>
+                    <td>
+                      <strong>{{ app.loanType }}</strong>
+                      <small>{{ app.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }}</small>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="'badge-' + appService.getStatusTone(app.overallStatus).toLowerCase()">
+                        {{ app.overallStatus }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      @if (state.selectedRecord(); as record) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Fallübersicht</h2>
+            <span class="badge" [ngClass]="'badge-' + appService.getStatusTone(record.overallStatus).toLowerCase()">
+              {{ record.overallStatus }}
+            </span>
+          </div>
+          <div class="status-grid">
+            <div class="status-box">
+              <label>KUNDE</label>
+              <div class="value">{{ record.firstName }} {{ record.lastName }}</div>
+              <div class="sub-value">{{ record.postalCode }} {{ record.city }}</div>
+            </div>
+            <div class="status-box">
+              <label>ANTRAG</label>
+              <div class="value">{{ record.loanType }}</div>
+              <div class="sub-value">{{ record.loanAmount | currency:'EUR':'symbol':'1.0-0':'de-DE' }} · {{ record.termMonths }} Monate</div>
+            </div>
+            <div class="status-box">
+              <label>VERWENDUNGSZWECK</label>
+              <div class="value">{{ record.purpose }}</div>
+            </div>
+            <div class="status-box">
+              <label>VOLLSTÄNDIGKEIT</label>
+              <div class="value">{{ record.completenessStatus }}</div>
+              <div class="sub-value">Pflichtfelder wurden bereits auf der Website geprüft</div>
+            </div>
+            <div class="status-box">
+              <label>ARBEITGEBER</label>
+              <div class="value">{{ record.employer }}</div>
+              <div class="sub-value">Ust-ID: {{ record.employerVatId }}</div>
+            </div>
+            <div class="status-box">
+              <label>AKTUELLER BESITZER</label>
+              <div class="value">{{ record.currentOwner }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Routing und Regeln</h2>
+          </div>
+          <div class="info-box info">
+            {{ record.routeMessage }}
+          </div>
+          @if (record.loanAmount >= 10000) {
+            <div class="info-box warning">
+              Teamleiterfreigabe erforderlich (Betrag >= 10.000 €).
+            </div>
+          } @else {
+            <div class="info-box success">
+              Keine Teamleiterfreigabe erforderlich.
+            </div>
+          }
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Verarbeitung</h2>
+          </div>
+          <div class="status-grid">
+            <div class="status-box">
+              <label>SCORING-STATUS</label>
+              <div class="value">{{ record.scoringStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>SCORE</label>
+              <div class="value">{{ record.score || '–' }}</div>
+              <div class="sub-value">Risikoklasse {{ record.riskClass }}</div>
+            </div>
+            <div class="status-box">
+              <label>TEAMLEITUNG</label>
+              <div class="value">{{ record.teamleadDecision }}</div>
+            </div>
+            <div class="status-box">
+              <label>ZINSBERECHNUNG</label>
+              <div class="value">{{ record.rateCalculationStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>DOKUMENT</label>
+              <div class="value">{{ record.documentStatus }}</div>
+            </div>
+            <div class="status-box">
+              <label>SIGNATUR / MAIL</label>
+              <div class="value">{{ record.signatureStatus }} / {{ record.mailStatus }}</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <!-- Row 1 -->
+            <button class="btn-action primary" 
+                    (click)="runAction(record.id, 'run_scoring')" 
+                    [disabled]="record.scoringStatus === 'Abgeschlossen'">
+              Scoring ausführen
+            </button>
+
+            @if (record.loanAmount < 10000 || record.teamleadDecision === 'Freigegeben') {
+              <button class="btn-action" 
+                      (click)="runAction(record.id, 'run_rate')" 
+                      [disabled]="record.rateCalculationStatus === 'Abgeschlossen'">
+                Zins berechnen
+              </button>
+            } @else {
+              <button class="btn-action primary" 
+                      (click)="runAction(record.id, 'send_teamlead')" 
+                      [disabled]="record.teamleadDecision === 'Ausstehend'">
+                @if (record.teamleadDecision === 'Ausstehend') { In Prüfung... } @else { An Teamleitung senden }
+              </button>
+            }
+
+            <!-- Row 2 -->
+            <button class="btn-action" 
+                    (click)="runAction(record.id, 'generate_offer')" 
+                    [disabled]="record.offerStatus === 'Angebot erstellt' || (record.loanAmount >= 10000 && record.teamleadDecision !== 'Freigegeben')">
+              Angebot erzeugen
+            </button>
+
+            <button class="btn-action" 
+                    (click)="runAction(record.id, 'send_signature')" 
+                    [disabled]="record.signatureStatus !== 'Nicht gestartet' || record.offerStatus !== 'Angebot erstellt'">
+              Zur Signatur senden
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="card">
+          <div class="placeholder-content">
+            Wählen Sie einen Vorgang aus der Liste aus, um die Details anzuzeigen.
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
